@@ -9,7 +9,6 @@ class Servicio_controllers extends CI_Controller {
 	}
 	public function Actividades()
 	{
-		//echo("123");
 		$this->servicios_model->Actividades();
 	}
 	public function articulos()
@@ -51,6 +50,6 @@ class Servicio_controllers extends CI_Controller {
 	}
 	public function updatePedidos()
 	{
-		$this->servicios_model->updatePedidos($_POST['PEDIDOS']);
+		$this->servicios_model->updatePedidos($_GET['PEDIDOS']);
 	}
 }
