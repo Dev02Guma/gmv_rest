@@ -13,10 +13,9 @@ $route['inVisitas'] = 'Servicio_controllers/InsertVisitas';
 $route['Login'] = 'Servicio_controllers/LoginUsuario';
 $route['url_pedidos'] = 'Servicio_controllers/url_pedidos';
 $route['updatePedidos'] = 'Servicio_controllers/updatePedidos';
-
 $route['Actividades'] = 'Servicio_controllers/Actividades';
-
 $route['pruebaJson'] = 'Servicio_controllers/pruebaJson';
+$route['unAgenda'] = 'Servicio_controllers/InsertAgenda';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

@@ -163,6 +163,29 @@ class servicios_model extends CI_Model
         echo json_encode($query);
     }
 
+    public function InsertAgenda($json){
+        foreach(json_decode($json, true) as $key){
+            $AgendaTop = array(
+                'IdPlan'       => $key['mIdPlan'],
+                'Vendedor'    => $key['mVendedor'],
+                'Ruta'        => $key['mRuta'],
+                'Inicia'         => $key['mInicia'],
+                'Termina'         => $key['mTermina'],
+                'Zona'        => $key['mZona']);
+            $this->db->insert('agenda', $AgendaTop);
+
+            $AgendaTop = array(
+                'IdPlan'       => $key['mIdPlan'],
+                'Lunes'  => $key['mLunes'],
+                'Martes'       => $key['mMartes'],
+                'Miercoles'       => $key['mMiercoles'],
+                'Jueves'       => $key['mJueves'],
+                'Viernes'       => $key['mViernes']);
+            $query = $this->db->insert('vclientes', $AgendaTop);
+        }
+        echo json_encode($query);
+    }
+
     public function url_pedidos($Data)
     {
         $i = 0;
