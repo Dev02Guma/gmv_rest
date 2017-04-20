@@ -38,6 +38,7 @@ class servicios_model extends CI_Model
             $rtnCliente['results'][$i]['mCredito']      = number_format($key['CREDITO'],2, '.', '');
             $rtnCliente['results'][$i]['mSaldo']        = number_format($key['SALDO'],2, '.', '');
             $rtnCliente['results'][$i]['mDisponible']   = number_format($key['DISPONIBLE'],2, '.', '');
+            $rtnCliente['results'][$i]['mCumple']       = Date("Y-m-d");
             $i++;
         }
         echo json_encode($rtnCliente);
@@ -166,21 +167,21 @@ class servicios_model extends CI_Model
     public function InsertAgenda($json){
         foreach(json_decode($json, true) as $key){
             $AgendaTop = array(
-                'IdPlan'       => $key['mIdPlan'],
+                'IdPlan'      => $key['mIdPlan'],
                 'Vendedor'    => $key['mVendedor'],
                 'Ruta'        => $key['mRuta'],
-                'Inicia'         => $key['mInicia'],
-                'Termina'         => $key['mTermina'],
+                'Inicia'      => $key['mInicia'],
+                'Termina'     => $key['mTermina'],
                 'Zona'        => $key['mZona']);
             $this->db->insert('agenda', $AgendaTop);
 
             $AgendaTop = array(
                 'IdPlan'       => $key['mIdPlan'],
-                'Lunes'  => $key['mLunes'],
+                'Lunes'        => $key['mLunes'],
                 'Martes'       => $key['mMartes'],
-                'Miercoles'       => $key['mMiercoles'],
+                'Miercoles'    => $key['mMiercoles'],
                 'Jueves'       => $key['mJueves'],
-                'Viernes'       => $key['mViernes']);
+                'Viernes'      => $key['mViernes']);
             $query = $this->db->insert('vclientes', $AgendaTop);
         }
         echo json_encode($query);
