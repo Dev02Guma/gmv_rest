@@ -9,7 +9,7 @@ class servicios_model extends CI_Model
     {
         $i=0;
         $rtnArticulo=array();
-        $query = $this->sqlsrv->fetchArray("SELECT * FROM tblcumplenero",SQLSRV_FETCH_ASSOC);
+        $query = $this->sqlsrv->fetchArray("SELECT * FROM GMV_mstr_articulos",SQLSRV_FETCH_ASSOC);
         foreach($query as $key){
             $rtnArticulo['results'][$i]['mCodigo']     = $key['ARTICULO'];
             $rtnArticulo['results'][$i]['mName']  = $key['DESCRIPCION'];
