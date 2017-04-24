@@ -16,6 +16,7 @@ $route['updatePedidos'] = 'Servicio_controllers/updatePedidos';
 $route['Actividades'] = 'Servicio_controllers/Actividades';
 $route['pruebaJson'] = 'Servicio_controllers/pruebaJson';
 $route['unAgenda'] = 'Servicio_controllers/InsertAgenda';
+$route['Agenda'] = 'Servicio_controllers/Agenda';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
