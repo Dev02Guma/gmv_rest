@@ -25,7 +25,7 @@ class Servicio_controllers extends CI_Controller {
 	}
 	public function Clientes()
 	{
-		$this->servicios_model->Clientes($_GET['mVendedor']);
+		$this->servicios_model->Clientes($_POST['mVendedor']);
 	}
 	public function Puntos()
 	{
@@ -34,7 +34,7 @@ class Servicio_controllers extends CI_Controller {
 	}
 	public function Agenda()
 	{
-		$this->servicios_model->Agenda($_GET['mVendedor']);
+		$this->servicios_model->Agenda($_POST['mVendedor']);
 
 	}
 	public function InsertCobros()
