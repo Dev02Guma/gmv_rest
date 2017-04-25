@@ -171,25 +171,28 @@ class servicios_model extends CI_Model
         foreach(json_decode($Data, true) as $key){
 
             //$this->db->delete('PEDIDO', array('IDPEDIDO' => $key['mIdPedido']));
-            $this->db->delete('PEDIDO_DETALLE', array('IDPEDIDO' => $key['mIdPedido']));
+            //$this->db->delete('PEDIDO_DETALLE', array('IDPEDIDO' => $key['mIdPedido']));
             
-            $consulta = $this->db->query('CALL SP_pedidos ("'.$key['mIdPedido'].'","'.$key['mVendedor'].'","'.$key['mCliente'].'",
-                                        "'.$key['mNombre'].'","'.$key['mFecha'].'","'.$key['mPrecio'].'","'.$key['mEstado'].'")');
+            $query = $this->db->query("SELECT IDPEDIDO FROM pedido WHERE IDPEDIDO = '".$key['mIdPedido']."'");
+            if ($query->num_rows() == 0) {
+                    $consulta = $this->db->query('CALL SP_pedidos ("'.$key['mIdPedido'].'","'.$key['mVendedor'].'","'.$key['mCliente'].'",
+                                            "'.$key['mNombre'].'","'.$key['mFecha'].'","'.$key['mPrecio'].'","'.$key['mEstado'].'")');
 
 
 
-           for ($e=0; $e <(count($key['detalles']['nameValuePairs']))/6; $e++){
-                $consulta2 = $this->db->query('CALL SP_Detalle_pedidos 
-                            ("'.$key['detalles']['nameValuePairs']['ID'.$i].'","'.$key['detalles']['nameValuePairs']['ARTICULO'.$i].'"
-                            ,"'.$key['detalles']['nameValuePairs']['DESC'.$i].'","'.$key['detalles']['nameValuePairs']['CANT'.$i].'"
-                            ,"'.number_format($key['detalles']['nameValuePairs']['TOTAL'.$i],2).'","'.$key['detalles']['nameValuePairs']['BONI'.$i].'")');
-                $i++;
-            }
-
+               for ($e=0; $e <(count($key['detalles']['nameValuePairs']))/6; $e++){
+                    $consulta2 = $this->db->query('CALL SP_Detalle_pedidos 
+                                ("'.$key['detalles']['nameValuePairs']['ID'.$i].'","'.$key['detalles']['nameValuePairs']['ARTICULO'.$i].'"
+                                ,"'.$key['detalles']['nameValuePairs']['DESC'.$i].'","'.$key['detalles']['nameValuePairs']['CANT'.$i].'"
+                                ,"'.number_format($key['detalles']['nameValuePairs']['TOTAL'.$i],2).'","'.$key['detalles']['nameValuePairs']['BONI'.$i].'")');
+                    $i++;
+                }
+            }$consulta[1] = 1;
+        }
+        
         echo json_encode($consulta);
     }
-    public function updatePedidos($Post)
-    {
+    public function updatePedidos($Post){
         $i = 0;
         $rtnPedido = array();
         foreach(json_decode($Post, true) as $key){
@@ -202,12 +205,14 @@ class servicios_model extends CI_Model
                     $rtnPedido['results'][$i]['mEstado']    = $key['ESTADO'];
                     $i++;
                 }
+            }else{
+                    $rtnPedido['results'][$i]['mIdPedido']  = " ";
+                    $rtnPedido['results'][$i]['mEstado']    = " ";
             }
         }
         echo json_encode($rtnPedido);
-    }   
-public function Actividades()
-    {
+    }
+    public function Actividades(){
         $i=0;
         $rtnActividad = array();
         $link = @mysql_connect('localhost', 'root', 'a7m1425.')or die('No se pudo conectar: ' . mysql_error());
