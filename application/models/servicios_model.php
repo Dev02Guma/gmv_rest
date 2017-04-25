@@ -276,9 +276,6 @@ public function Actividades()
     {
         $i=0;
         $rtnActividad = array();
-        //$this->db->select("A.IDACTIVIDAD, A.ACTIVIDAD, A.IDCATEGORIA, C.CATEGORIA ");
-        //$this->db->from("ACTIVIDAD A");
-        //$this->db->join("CATEGORIA C", "A.IDCATEGORIA=C.IDCATEGORIA");
         $query=$this->db->get('actividades');
 
         if ($query->num_rows()>0)
@@ -286,8 +283,8 @@ public function Actividades()
             foreach ($query->result_array() as $key)
             {
                 $rtnActividad['results'][$i]['mIdAE'] = $key['IDACTIVIDAD'];
-                $rtnActividad['results'][$i]['mCategoria'] = utf8_encode($key['CATEGORIA']);
-                $rtnActividad['results'][$i]['mActividad'] = utf8_encode($key['ACTIVIDAD']);
+                $rtnActividad['results'][$i]['mCategoria'] = $key['CATEGORIA'];
+                $rtnActividad['results'][$i]['mActividad'] = $key['ACTIVIDAD'];
                 $i++;
             }
         }
