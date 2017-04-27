@@ -9,7 +9,6 @@ class Servicio_controllers extends CI_Controller {
 	}
 	public function Actividades()
 	{
-		//echo("123");
 		$this->servicios_model->Actividades();
 	}
 	public function articulos()
@@ -33,6 +32,11 @@ class Servicio_controllers extends CI_Controller {
 		$this->servicios_model->Puntos($_POST['mVendedor']);
 
 	}
+	public function Agenda()
+	{
+		$this->servicios_model->Agenda($_POST['mVendedor']);
+
+	}
 	public function InsertCobros()
 	{
 		$this->servicios_model->InsertCobros($_POST['pCobros']);
@@ -40,6 +44,10 @@ class Servicio_controllers extends CI_Controller {
 	public function InsertVisitas()
 	{
 		$this->servicios_model->InsertVisitas($_POST['mVisitas']);
+	}
+	public function InsertAgenda()
+	{
+		$this->servicios_model->InsertAgenda($_POST['mAgenda']);
 	}
 	public function LoginUsuario()
 	{

@@ -23,6 +23,8 @@ class servicios_model extends CI_Model
         echo json_encode($rtnArticulo);
         $this->sqlsrv->close();
     }
+
+
     public function Clientes($Vendedor)
     {
         $i=0;
@@ -38,9 +40,22 @@ class servicios_model extends CI_Model
             $rtnCliente['results'][$i]['mCredito']      = number_format($key['CREDITO'],2, '.', '');
             $rtnCliente['results'][$i]['mSaldo']        = number_format($key['SALDO'],2, '.', '');
             $rtnCliente['results'][$i]['mDisponible']   = number_format($key['DISPONIBLE'],2, '.', '');
+            $rtnCliente['results'][$i]['mCumple']       = $this->Cumple($key['CLIENTE']);
             $i++;
         }
         echo json_encode($rtnCliente);
+        $this->sqlsrv->close();
+    }
+    private function Cumple($Codigo)
+    {
+        $i=0;
+        $rtnCliente="00-00-0000";
+        $query = $this->sqlsrv->fetchArray("SELECT convert(varchar, Fecha, 105) as Fecha FROM tblcumplenero WHERE Codigo='".$Codigo."'",SQLSRV_FETCH_ASSOC);
+        foreach($query as $key){
+            $rtnCliente = $key['Fecha'];
+            $i++;
+        }
+        return  $rtnCliente;
         $this->sqlsrv->close();
     }
     public function ClienteMora($Vendedor)
@@ -133,6 +148,32 @@ class servicios_model extends CI_Model
         }
         echo json_encode($rtnUsuario);
     }
+    public function Agenda($Ruta){
+        $i=0;
+        $rtnAgenda = array();
+        $this->db->where('Ruta',$Ruta);
+        $this->db->where('Estado',1);
+        $query = $this->db->get('vtsplanes');
+
+
+        if ($query->num_rows() > 0) {
+            foreach ($query->result_array() as $key) {
+                $rtnAgenda['results'][$i]['mIdPlan']        = $key['IdPlan'];
+                $rtnAgenda['results'][$i]['mVendedor']      = $key['Vendedor'];
+                $rtnAgenda['results'][$i]['mRuta']          = $key['Ruta'];
+                $rtnAgenda['results'][$i]['mInicia']        = $key['Inicia'];
+                $rtnAgenda['results'][$i]['mTermina']       = $key['Termina'];
+                $rtnAgenda['results'][$i]['mZona']          = $key['Zona'];
+                $rtnAgenda['results'][$i]['mEstado']        = $key['Estado'];
+                $rtnAgenda['results'][$i]['mLunes']         = $key['Lunes'];
+                $rtnAgenda['results'][$i]['mMartes']        = $key['Martes'];
+                $rtnAgenda['results'][$i]['mMiercoles']     = $key['Miercoles'];
+                $rtnAgenda['results'][$i]['mJueves']        = $key['Jueves'];
+                $rtnAgenda['results'][$i]['mViernes']       = $key['Viernes'];
+            }
+        }
+        echo json_encode($rtnAgenda);
+    }
   public function InsertCobros($json){
         foreach(json_decode($json, true) as $key){
             $Cobros = array(
@@ -159,6 +200,29 @@ class servicios_model extends CI_Model
                 'Observacion'  => $key['mObservacion'],
                 'Accion'       => $key['mAccion']);
             $query = $this->db->insert('visitas', $Visitas);
+        }
+        echo json_encode($query);
+    }
+
+    public function InsertAgenda($json){
+        foreach(json_decode($json, true) as $key){
+            $AgendaTop = array(
+                'IdPlan'      => $key['mIdPlan'],
+                'Vendedor'    => $key['mVendedor'],
+                'Ruta'        => $key['mRuta'],
+                'Inicia'      => $key['mInicia'],
+                'Termina'     => $key['mTermina'],
+                'Zona'        => $key['mZona']);
+            $this->db->insert('agenda', $AgendaTop);
+
+            $AgendaTop = array(
+                'IdPlan'       => $key['mIdPlan'],
+                'Lunes'        => $key['mLunes'],
+                'Martes'       => $key['mMartes'],
+                'Miercoles'    => $key['mMiercoles'],
+                'Jueves'       => $key['mJueves'],
+                'Viernes'      => $key['mViernes']);
+            $query = $this->db->insert('vclientes', $AgendaTop);
         }
         echo json_encode($query);
     }
@@ -192,6 +256,7 @@ class servicios_model extends CI_Model
         
         echo json_encode($consulta);
     }
+    
     public function updatePedidos($Post){
         $i = 0;
         $rtnPedido = array();
@@ -212,27 +277,23 @@ class servicios_model extends CI_Model
         }
         echo json_encode($rtnPedido);
     }
+
     public function Actividades(){
         $i=0;
         $rtnActividad = array();
-        $link = @mysql_connect('localhost', 'root', 'a7m1425.')or die('No se pudo conectar: ' . mysql_error());
-        mysql_select_db('gmv') or die('No se pudo seleccionar la base de datos');
-        $query = "SELECT A.IDACTIVIDAD, A.ACTIVIDAD, A.IDCATEGORIA, C.CATEGORIA
-                  FROM ACTIVIDAD A INNER JOIN CATEGORIA C ON A.IDCATEGORIA=C.IDCATEGORIA
-                  ORDER BY C.CATEGORIA, A.ACTIVIDAD
-                 ";
+        $query=$this->db->get('actividades');
 
-        $result = mysql_query($query,$link) or die('Consulta fallida: '.mysql_error());
-        //$key = mysql_fetch_array($result, MYSQL_ASSOC);
-        while ($row=mysql_fetch_array($result))
+        if ($query->num_rows()>0)
         {
-            $rtnActividad['results'][$i]['mIdAE'] = $row['IDACTIVIDAD'];
-            $rtnActividad['results'][$i]['mCategoria'] = utf8_encode($row['CATEGORIA']);
-            $rtnActividad['results'][$i]['mActividad'] = utf8_encode($row['ACTIVIDAD']);
-         $i++;
-            //echo($row['IDACTIVIDAD']);
+            foreach ($query->result_array() as $key)
+            {
+                $rtnActividad['results'][$i]['mIdAE'] = $key['IDACTIVIDAD'];
+                $rtnActividad['results'][$i]['mCategoria'] = $key['CATEGORIA'];
+                $rtnActividad['results'][$i]['mActividad'] = $key['ACTIVIDAD'];
+                $i++;
+            }
         }
-       
+        echo json_encode($rtnActividad);
     }
 }
 ?>
