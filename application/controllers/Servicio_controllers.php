@@ -26,6 +26,12 @@ class Servicio_controllers extends CI_Controller {
 	public function Clientes()
 	{
 		$this->servicios_model->Clientes($_POST['mVendedor']);
+
+	}
+	public function Historial()
+	{
+		$this->servicios_model->Historial($_POST['mVendedor']);
+
 	}
 	public function Puntos()
 	{
