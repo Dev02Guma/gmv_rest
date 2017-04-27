@@ -46,6 +46,24 @@ class servicios_model extends CI_Model
         echo json_encode($rtnCliente);
         $this->sqlsrv->close();
     }
+
+    public function Historial($Vendedor)
+    {
+        $i=0;
+        $rtnCliente=array();
+        $query = $this->sqlsrv->fetchArray("SELECT * FROM GMV_hstCompra_3M WHERE VENDEDOR='".$Vendedor."' ",SQLSRV_FETCH_ASSOC);
+        foreach($query as $key){
+            $rtnCliente['results'][$i]['mArticulo']      = $key['ARTICULO'];
+            $rtnCliente['results'][$i]['mNombre']       = $key['DESCRIPCION'];
+            $rtnCliente['results'][$i]['mCantidad']    = number_format($key['CANTIDAD'],0);
+            $rtnCliente['results'][$i]['mFecha']          = $key['Dia'];
+            $rtnCliente['results'][$i]['mCliente']       = $key['Cliente'];
+            $rtnCliente['results'][$i]['mVendedor']       = $key['VENDEDOR'];
+            $i++;
+        }
+        echo json_encode($rtnCliente);
+        $this->sqlsrv->close();
+    }
     private function Cumple($Codigo)
     {
         $i=0;
