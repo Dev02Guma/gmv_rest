@@ -215,6 +215,8 @@ class servicios_model extends CI_Model
                 'Lati'         => $key['mLati'],
                 'Logi'         => $key['mLogi'],
                 'Local'        => $key['mLocal'],
+                'Inicio'       => $key['mInicio'],
+                'Fin'          => $key['mFin'],
                 'Observacion'  => $key['mObservacion'],
                 'Accion'       => $key['mTipo']);
             $query = $this->db->insert('visitas', $Visitas);
@@ -245,7 +247,7 @@ class servicios_model extends CI_Model
         echo json_encode($query);
     }
 
-    public function url_pedidos($Data)
+    public function insertPedidos($Data)
     {
         $i = 0;
         $rtnUsuario = array();
