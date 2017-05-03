@@ -216,7 +216,7 @@ class servicios_model extends CI_Model
                 'Logi'         => $key['mLogi'],
                 'Local'        => $key['mLocal'],
                 'Observacion'  => $key['mObservacion'],
-                'Accion'       => $key['mAccion']);
+                'Accion'       => $key['mTipo']);
             $query = $this->db->insert('visitas', $Visitas);
         }
         echo json_encode($query);
@@ -249,30 +249,31 @@ class servicios_model extends CI_Model
     {
         $i = 0;
         $rtnUsuario = array();
-        $consulta = "";
+        //$consulta = "";
         foreach(json_decode($Data, true) as $key){
-
-            //$this->db->delete('PEDIDO', array('IDPEDIDO' => $key['mIdPedido']));
-            //$this->db->delete('PEDIDO_DETALLE', array('IDPEDIDO' => $key['mIdPedido']));
             
             $query = $this->db->query("SELECT IDPEDIDO FROM pedido WHERE IDPEDIDO = '".$key['mIdPedido']."'");
             if ($query->num_rows() == 0) {
-                    $consulta = $this->db->query('CALL SP_pedidos ("'.$key['mIdPedido'].'","'.$key['mVendedor'].'","'.$key['mCliente'].'",
+                    $rtnUsuario['results'][$i]['mEstado'] = $this->db->query('CALL SP_pedidos ("'.$key['mIdPedido'].'","'.$key['mVendedor'].'","'.$key['mCliente'].'",
                                             "'.$key['mNombre'].'","'.$key['mFecha'].'","'.$key['mPrecio'].'","'.$key['mEstado'].'")');
 
-
-
                for ($e=0; $e <(count($key['detalles']['nameValuePairs']))/6; $e++){
-                    $consulta2 = $this->db->query('CALL SP_Detalle_pedidos 
-                                ("'.$key['detalles']['nameValuePairs']['ID'.$i].'","'.$key['detalles']['nameValuePairs']['ARTICULO'.$i].'"
-                                ,"'.$key['detalles']['nameValuePairs']['DESC'.$i].'","'.$key['detalles']['nameValuePairs']['CANT'.$i].'"
-                                ,"'.number_format($key['detalles']['nameValuePairs']['TOTAL'.$i],2).'","'.$key['detalles']['nameValuePairs']['BONI'.$i].'")');
+                    $datos = array('IDPEDIDO' => $key['detalles']['nameValuePairs']['ID'.$i],
+                                   'ARTICULO' => $key['detalles']['nameValuePairs']['ARTICULO'.$i],
+                                   'DESCRIPCION' => $key['detalles']['nameValuePairs']['DESC'.$i],
+                                   'CANTIDAD' => $key['detalles']['nameValuePairs']['CANT'.$i],
+                                   'TOTAL' => number_format($key['detalles']['nameValuePairs']['TOTAL'.$i],2),
+                                   'BONIFICADO' => $key['detalles']['nameValuePairs']['BONI'.$i]
+                                );
+                    $rtnUsuario['results'][$i]['mEstado'] = $this->db->insert('pedido_detalle',$datos);
                     $i++;
                 }
-            }$consulta[1] = 1;
+            }else{
+                $rtnUsuario['results'][$i]['mEstado'] = "ALGUNOS PEDIDOS NO SE ENVIARON PORQUE YA FUERON REGISTRADOS";
+            }
         }
         
-        echo json_encode($consulta);
+        echo json_encode($rtnUsuario);
     }
     
     public function updatePedidos($Post){
