@@ -59,9 +59,9 @@ class Servicio_controllers extends CI_Controller {
 	{
 		$this->servicios_model->LoginUsuario($_POST['usuario'],$_POST['pass']);
 	}
-	public function url_pedidos()
+	public function insertPedidos()
 	{
-		$this->servicios_model->url_pedidos($_POST['PEDIDOS']);
+		$this->servicios_model->insertPedidos($_POST['PEDIDOS']);
 	}
 	public function updatePedidos()
 	{
