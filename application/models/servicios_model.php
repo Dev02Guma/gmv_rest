@@ -31,6 +31,7 @@ class servicios_model extends CI_Model
         $rtnCliente=array();
         $query = $this->sqlsrv->fetchArray("SELECT * FROM GMV_Clientes WHERE VENDEDOR='".$Vendedor."'",SQLSRV_FETCH_ASSOC);
         foreach($query as $key){
+            $Cumple = $this->Cumple($key['CLIENTE']);
             $rtnCliente['results'][$i]['mCliente']      = $key['CLIENTE'];
             $rtnCliente['results'][$i]['mNombre']       = $key['NOMBRE'];
             $rtnCliente['results'][$i]['mDireccion']    = $key['DIRECCION'];
@@ -40,7 +41,8 @@ class servicios_model extends CI_Model
             $rtnCliente['results'][$i]['mCredito']      = number_format($key['CREDITO'],2, '.', '');
             $rtnCliente['results'][$i]['mSaldo']        = number_format($key['SALDO'],2, '.', '');
             $rtnCliente['results'][$i]['mDisponible']   = number_format($key['DISPONIBLE'],2, '.', '');
-            $rtnCliente['results'][$i]['mCumple']       = $this->Cumple($key['CLIENTE']);
+            $rtnCliente['results'][$i]['mCumple']       = $Cumple;
+            $rtnCliente['results'][$i]['mMes']          = intval(substr($Cumple,3,2));
             $i++;
         }
         echo json_encode($rtnCliente);
