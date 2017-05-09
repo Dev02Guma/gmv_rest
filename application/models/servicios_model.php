@@ -41,10 +41,18 @@ class servicios_model extends CI_Model
             $rtnCliente['results'][$i]['mSaldo']        = number_format($key['SALDO'],2, '.', '');
             $rtnCliente['results'][$i]['mDisponible']   = number_format($key['DISPONIBLE'],2, '.', '');
             $rtnCliente['results'][$i]['mCumple']       = $this->Cumple($key['CLIENTE']);
+            
             $i++;
         }
         echo json_encode($rtnCliente);
         $this->sqlsrv->close();
+    }
+
+    public function porcentaje($actual,$meta)
+    {
+        if ($meta != 0) {
+            return ($actual/$meta)*100;
+        }return 0;
     }
 
     public function Historial($Vendedor)
@@ -108,6 +116,7 @@ class servicios_model extends CI_Model
             $rtnCliente['results'][$i]['mVentasActual']      = number_format($key['VentaEnValoresAct'],2,'.','');
             $rtnCliente['results'][$i]['mPromedioVenta3M']   = number_format($key['VentaEnValores3MAnt'],2,'.','');
             $rtnCliente['results'][$i]['mCantidadItems3M']   = number_format($key['NumItemFac3MAnt'],2,'.','');
+            $rtnCliente['results'][$i]['mCumplimiento'] = $this->porcentaje($key['VentaEnValoresAct'],$key['MetaVentaEnValores']);
             $i++;
         }
         echo json_encode($rtnCliente);
@@ -247,34 +256,39 @@ class servicios_model extends CI_Model
         echo json_encode($query);
     }
 
-    public function insertPedidos($Data)
-    {
+    public function insertPedidos($Data){
+        
         $i = 0;
         $rtnUsuario = array();
-        //$consulta = "";
+        
         foreach(json_decode($Data, true) as $key){
             
             $query = $this->db->query("SELECT IDPEDIDO FROM pedido WHERE IDPEDIDO = '".$key['mIdPedido']."'");
+            
             if ($query->num_rows() == 0) {
-                    $rtnUsuario['results'][$i]['mEstado'] = $this->db->query('CALL SP_pedidos ("'.$key['mIdPedido'].'","'.$key['mVendedor'].'","'.$key['mCliente'].'",
+                    $rtnUsuario['results'][0]['mEstado'] = $this->db->query('CALL SP_pedidos ("'.$key['mIdPedido'].'","'.$key['mVendedor'].'","'.$key['mCliente'].'",
                                             "'.$key['mNombre'].'","'.$key['mFecha'].'","'.$key['mPrecio'].'","'.$key['mEstado'].'")');
 
-               for ($e=0; $e <(count($key['detalles']['nameValuePairs']))/6; $e++){
-                    $datos = array('IDPEDIDO' => $key['detalles']['nameValuePairs']['ID'.$i],
-                                   'ARTICULO' => $key['detalles']['nameValuePairs']['ARTICULO'.$i],
-                                   'DESCRIPCION' => $key['detalles']['nameValuePairs']['DESC'.$i],
-                                   'CANTIDAD' => $key['detalles']['nameValuePairs']['CANT'.$i],
-                                   'TOTAL' => number_format($key['detalles']['nameValuePairs']['TOTAL'.$i],2),
+                for ($e=0; $e <(count($key['detalles']['nameValuePairs']))/6; $e++){
+                    $datos = array('IDPEDIDO'   => $key['detalles']['nameValuePairs']['ID'.$i],
+                                   'ARTICULO'   => $key['detalles']['nameValuePairs']['ARTICULO'.$i],
+                                   'DESCRIPCION'=> $key['detalles']['nameValuePairs']['DESC'.$i],
+                                   'CANTIDAD'   => $key['detalles']['nameValuePairs']['CANT'.$i],
+                                   'TOTAL'      => number_format($key['detalles']['nameValuePairs']['TOTAL'.$i],2),
                                    'BONIFICADO' => $key['detalles']['nameValuePairs']['BONI'.$i]
                                 );
-                    $rtnUsuario['results'][$i]['mEstado'] = $this->db->insert('pedido_detalle',$datos);
+                    $rtnUsuario['results'][0]['mEstado'] = $this->db->insert('pedido_detalle',$datos);                    
                     $i++;
                 }
             }else{
-                $rtnUsuario['results'][$i]['mEstado'] = "ALGUNOS PEDIDOS NO SE ENVIARON PORQUE YA FUERON REGISTRADOS";
+                for ($e=0; $e <(count($key['detalles']['nameValuePairs']))/6; $e++){
+                    $i++;
+                }
+            }
+            if ($rtnUsuario['results'][0]['mEstado'] = "") {
+                $rtnUsuario['results'][0]['mEstado'] = "ALGUNOS PEDIDOS NO SE PUEDEN REENVIAR YA QUE ESTAN REGISTRADOS";
             }
         }
-        
         echo json_encode($rtnUsuario);
     }
     
