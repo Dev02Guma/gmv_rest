@@ -53,7 +53,7 @@ class servicios_model extends CI_Model
     public function porcentaje($actual,$meta)
     {
         if ($meta != 0) {
-            return ($actual/$meta)*100;
+            return number_format((($actual/$meta)*100),0,',','');
         }return 0;
     }
 
@@ -112,13 +112,13 @@ class servicios_model extends CI_Model
         $query = $this->sqlsrv->fetchArray("SELECT * FROM GMV_indicadores_clientes WHERE VENDEDOR='".$Vendedor."'",SQLSRV_FETCH_ASSOC);
         foreach($query as $key){
             $rtnCliente['results'][$i]['mCliente']           = $key['CLIENTE'];
-            $rtnCliente['results'][$i]['mNombre']           = $key['NombreCliente'];
-            $rtnCliente['results'][$i]['mVendedor']           = $key['VENDEDOR'];
+            $rtnCliente['results'][$i]['mNombre']            = $key['NombreCliente'];
+            $rtnCliente['results'][$i]['mVendedor']          = $key['VENDEDOR'];
             $rtnCliente['results'][$i]['mMetas']             = number_format($key['MetaVentaEnValores'],2,'.','');
             $rtnCliente['results'][$i]['mVentasActual']      = number_format($key['VentaEnValoresAct'],2,'.','');
             $rtnCliente['results'][$i]['mPromedioVenta3M']   = number_format($key['VentaEnValores3MAnt'],2,'.','');
             $rtnCliente['results'][$i]['mCantidadItems3M']   = number_format($key['NumItemFac3MAnt'],2,'.','');
-            $rtnCliente['results'][$i]['mCumplimiento'] = $this->porcentaje($key['VentaEnValoresAct'],$key['MetaVentaEnValores']);
+            $rtnCliente['results'][$i]['mCumplimiento']      = $this->porcentaje($key['VentaEnValoresAct'],$key['MetaVentaEnValores']);
             $i++;
         }
         echo json_encode($rtnCliente);
@@ -176,6 +176,52 @@ class servicios_model extends CI_Model
             }            
         }
         echo json_encode($rtnUsuario);
+    }
+    public function uptCumple(){
+        $query = $this->db->get('cumpleanero.tblcumplenero');
+        if ($query->num_rows() > 0) {
+            foreach ($query->result_array() as $key) {
+                $tmp = new Cumpleannos();
+                $cu = substr($key['cedula'],4,strlen($key['cedula']));
+                $cu = substr($cu,0,strpos($cu, "-"));
+                $tmp->setCodigo($this->Strg_ID_CLIENTE($key['Codigo']));
+                $tmp->setCedula($this->getDateString($cu));
+                $tmp->setRuta($key['ruta']);
+                $this->db->where('Codigo', $key['Codigo']);
+                $this->db->update('cumpleanero.tblcumplenero', $tmp);
+            }
+
+        }
+    }
+    public function getDateString($str){
+        if($str!=""){
+            return substr($str,0,2)."-".substr($str,2,2)."-19".substr($str,4,2);
+        }
+        return "";
+    }
+    public function Strg_ID_CLIENTE($str){
+        switch (strlen($str)) {
+            case '1':
+                $varreturn="0000".$str;
+                break;
+            case '2':
+                $varreturn="000".$str;
+                break;
+            case '3':
+                $varreturn="00".$str;
+                break;
+            case '4':
+                $varreturn="0".$str;
+                break;
+            case '5':
+                $varreturn=$str;
+                break;
+            default;
+                $varreturn=$str;
+                break;
+
+        }
+        return $varreturn;
     }
     public function Agenda($Ruta){
         $i=0;

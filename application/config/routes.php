@@ -19,6 +19,7 @@ $route['unAgenda'] = 'Servicio_controllers/InsertAgenda';
 $route['Agenda'] = 'Servicio_controllers/Agenda';
 $route['Historial'] = 'Servicio_controllers/Historial';
 
+$route['uCumple'] = 'Servicio_controllers/cumple';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
