@@ -18,6 +18,7 @@ class servicios_model extends CI_Model
             $rtnArticulo['results'][$i]['mPrecio']       = number_format($key['PRECIO'],2,'.','');
             $rtnArticulo['results'][$i]['mPuntos']       = $key['PUNTOS']   ;
             $rtnArticulo['results'][$i]['mReglas']       = $key['REGLAS'];
+            $rtnArticulo['results'][$i]['mUnidadMedida'] = $key['UNIDAD_MEDIDA'];
             $i++;
         }
         echo json_encode($rtnArticulo);
@@ -258,19 +259,24 @@ class servicios_model extends CI_Model
     }
 
     public function insertPedidos($Data){
-        
+
         $i = 0;
         $rtnUsuario = array();
         $cadena = "";
-        
+
         foreach(json_decode($Data, true) as $key){
-            
+            $responsable = $this->db->query("SELECT ResponsableUsuario FROM view_grupoasignacion WHERE Ruta = '".$key['mVendedor']."'");
+
             $query = $this->db->query("SELECT IDPEDIDO FROM pedido WHERE IDPEDIDO = '".$key['mIdPedido']."'");
             $cadena = "'".$key['mIdPedido']."',";
             if ($query->num_rows() == 0){
+
+                    //$this->db->query("insert into pedido (COMENTARIO) VALUES ('".$key['mComentario']."')"); 
                     $insert = $this->db->query('CALL SP_pedidos ("'.$key['mIdPedido'].'","'.$key['mVendedor'].'","'.$key['mCliente'].'",
-                                            "'.$key['mNombre'].'","'.$key['mFecha'].'","'.$key['mPrecio'].'","'.$key['mEstado'].'")');
-                    
+                                            "'.$key['mNombre'].'","'.$key['mFecha'].'","'.$key['mPrecio'].'","'.$key['mEstado'].'",
+                                            "'.$responsable->result_array()[0]['ResponsableUsuario'].'","'.$key['mComentario'].'")');
+
+                
                 for ($e=0; $e <(count($key['detalles']['nameValuePairs']))/6; $e++){
                     $datos = array('IDPEDIDO'   => $key['detalles']['nameValuePairs']['ID'.$i],
                                    'ARTICULO'   => $key['detalles']['nameValuePairs']['ARTICULO'.$i],
@@ -279,14 +285,14 @@ class servicios_model extends CI_Model
                                    'TOTAL'      => number_format(str_replace(",", "", $key['detalles']['nameValuePairs']['TOTAL'.$i]),2),
                                    'BONIFICADO' => $key['detalles']['nameValuePairs']['BONI'.$i]
                                 );
-                    $this->db->insert('pedido_detalle',$datos);                    
+                    $this->db->insert('pedido_detalle',$datos);
                     $i++;
                 }
             }else{
                 for ($e=0; $e <(count($key['detalles']['nameValuePairs']))/6; $e++){
                     $i++;
                 }
-            }            
+            }
         }
         $query = $this->db->query("SELECT IDPEDIDO FROM pedido WHERE IDPEDIDO IN (".substr($cadena, 0,-1).")");
         if ($query->num_rows()>0) {
@@ -296,7 +302,7 @@ class servicios_model extends CI_Model
         }
         echo json_encode($rtnUsuario);
     }
-    
+
     public function updatePedidos($Post){
         $i = 0;
         $rtnPedido = array();
