@@ -306,18 +306,30 @@ class servicios_model extends CI_Model
 
     public function insertPedidos($Data){
 
+        /*$pedido = 'F07P22051731';
+
+        $rest = substr($pedido, 1,2);
+        echo "F".$rest;*/
+
         $i = 0;
         $rtnUsuario = array();
         $cadena = "";
 
         foreach(json_decode($Data, true) as $key){
+            /*$rest = substr($key['mIdPedido'], 1,2);
+            $MIVENDEDOR = "F".$rest;*/
+            //$responsable = $this->db->query("SELECT ResponsableUsuario FROM view_grupoasignacion WHERE Ruta = '".$MIVENDEDOR."'");
             $responsable = $this->db->query("SELECT ResponsableUsuario FROM view_grupoasignacion WHERE Ruta = '".$key['mVendedor']."'");
+
 
             $query = $this->db->query("SELECT IDPEDIDO FROM pedido WHERE IDPEDIDO = '".$key['mIdPedido']."'");
             $cadena = "'".$key['mIdPedido']."',";
             if ($query->num_rows() == 0){
 
-                    //$this->db->query("insert into pedido (COMENTARIO) VALUES ('".$key['mComentario']."')"); 
+                     /*$insert = $this->db->query('CALL SP_pedidos ("'.$key['mIdPedido'].'","'.$MIVENDEDOR.'","'.$key['mCliente'].'",
+                                            "'.$key['mNombre'].'","'.$key['mFecha'].'","'.$key['mPrecio'].'","'.$key['mEstado'].'",
+                                            "'.$responsable->result_array()[0]['ResponsableUsuario'].'","'.$key['mComentario'].'")');*/
+
                     $insert = $this->db->query('CALL SP_pedidos ("'.$key['mIdPedido'].'","'.$key['mVendedor'].'","'.$key['mCliente'].'",
                                             "'.$key['mNombre'].'","'.$key['mFecha'].'","'.$key['mPrecio'].'","'.$key['mEstado'].'",
                                             "'.$responsable->result_array()[0]['ResponsableUsuario'].'","'.$key['mComentario'].'")');
@@ -345,6 +357,43 @@ class servicios_model extends CI_Model
             $rtnUsuario['results'][0]['mEstado'] = "PEDIDOS ENVIADOS...";
         }else{
             $rtnUsuario['results'][0]['mEstado'] = "ERROR, INTENTELO MAS TARDE";
+        }
+        echo json_encode($rtnUsuario);
+    }
+
+    public function insertRazones($Post){
+        $i = 0;
+        $rtnUsuario = array();
+        $cadena = "";
+
+        foreach(json_decode($Post, true) as $key){
+            $cadena = "'".$key['mIdRazon']."',";
+
+                $datos = array('IdRazon' => $key['mIdRazon'],
+                                'Vendedor' => $key['mVendedor'],
+                                'Cliente' => $key['mCliente'],
+                                'Fecha' => $key['mFecha'],
+                                'Observacion' => $key['mObservacion']
+                            );
+                $insert= $this->db->insert('RAZON',$datos);
+
+                
+                for ($e=0; $e <(count($key['detalles']['nameValuePairs']))/6; $e++){
+                    $datos2 = array('IdRazon'   => $key['detalles']['nameValuePairs']['IdRazon'.$i],
+                                   'IdAE'   => $key['detalles']['nameValuePairs']['IdAE'.$i],
+                                   'Actividad'=> $key['detalles']['nameValuePairs']['Actividad'.$i],
+                                   'Categoria'   => $key['detalles']['nameValuePairs']['Categoria'.$i]
+                                );
+                    $this->db->insert('razon_detalle',$datos2);
+                    $i++;
+                }                
+            }
+        
+        $query = $this->db->query("SELECT IdRazon FROM RAZON WHERE IdRazon IN (".substr($cadena, 0,-1).")");
+        if ($query->num_rows()>0) {
+            $rtnUsuario['results'][0]['mEstado'] = "RAZONEZ ENVIADAS...";
+        }else{
+            $rtnUsuario['results'][0]['mEstado'] = "ERROR EN RAZONES, INTENTELO MAS TARDE";
         }
         echo json_encode($rtnUsuario);
     }
