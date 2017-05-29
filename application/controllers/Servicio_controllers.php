@@ -62,7 +62,7 @@ class Servicio_controllers extends CI_Controller {
 	}
 	public function insertPedidos()
 	{
-		
+		//$pedidos = '[{"detalles":{"nameValuePairs":{"ID0":"F09P29051731","ARTICULO0":"10118041","DESC0":"Bleomicina Sulfato 15 UI PPSI 5ml/Vial 1/Caja Refrigerado (Naprod)","CANT0":"12.0","TOTAL0":"483","BONI0":"0"}},"mCliente":"00998","mComentario":"pedido desde tablet de maryan","mEstado":"0","mFecha":"2017-05-29 07:43:59","mIdPedido":"F09P29051731","mNombre":"FARMACIA MARIA BELEN","mPrecio":"5796.0","mVendedor":"F09"}]';
 		$this->servicios_model->insertPedidos($_POST['PEDIDOS']);
 		//$this->servicios_model->insertPedidos($pedidos);
 	}

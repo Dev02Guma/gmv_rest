@@ -358,6 +358,8 @@ class servicios_model extends CI_Model
         }else{
             $rtnUsuario['results'][0]['mEstado'] = "ERROR, INTENTELO MAS TARDE";
         }
+
+        
         echo json_encode($rtnUsuario);
     }
 
