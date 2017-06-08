@@ -59,6 +59,7 @@ class Servicio_controllers extends CI_Controller {
 	public function LoginUsuario()
 	{
 		$this->servicios_model->LoginUsuario($_POST['usuario'],$_POST['pass']);
+		//$this->servicios_model->LoginUsuario("F10","wb1406");
 	}
 	public function insertPedidos()
 	{
@@ -73,5 +74,21 @@ class Servicio_controllers extends CI_Controller {
 	public function insertRazones()
 	{
 		$this->servicios_model->insertRazones($_POST['RAZONES']);
+	}
+	public function lotes()
+	{
+		$this->servicios_model->lotes();
+	}
+	public function CONSECUTIVO()
+	{
+		$this->servicios_model->CONSECUTIVO($_POST['usuario']);
+		//$this->servicios_model->CONSECUTIVO("F09");
+	}
+
+	public function prueba()
+	{
+		$numero = '[{"detalles":{"nameValuePairs":{"IdRazon0":"F10R07061754","IdAE0":"8","Actividad0":"LLENAR FORMATO FALTANTE","Categoria0":"ACTUALIZACION DE DATOS","IdRazon1":"F10R07061754","IdAE1":"9","Actividad1":"SOLICITUD DE DOCUMENTACION","Categoria1":"ACTUALIZACION DE DATOS","IdRazon2":"F10R07061754","IdAE2":"16","Actividad2":"CIERRE DE CAMPAÑA","Categoria2":"CAMPAÑA","IdRazon3":"F10R07061754","IdAE3":"17","Actividad3":"PROMOVER CAMPAÑA","Categoria3":"CAMPAÑA"}},"mCliente":"03466","mFecha":"2017-06-07 15:59:26","mIdRazon":"F10R07061754","mObservacion":"","mVendedor":"F10"}]';
+		//echo json_encode($numero);
+		//$this->servicios_model->insertRazones($numero);
 	}
 }
