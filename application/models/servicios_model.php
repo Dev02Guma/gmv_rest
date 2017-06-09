@@ -179,21 +179,22 @@ class servicios_model extends CI_Model
         $rtnUsuario = array();
 
         $this->db->where('Usuario',$usuario);
+        $this->db->where('Activo',"1");
         $this->db->where('Password',$pass);
         $query = $this->db->get('view_usuario');
-
             
-        if ($query->num_rows() > 0) {
-            
+        if ($query->num_rows() > 0) {            
             foreach ($query->result_array() as $key) {
                 $rtnUsuario['results'][$i]['mUsuario'] = $key['Usuario'];
                 $rtnUsuario['results'][$i]['mNombre'] = $key['Nombre'];
-                $rtnUsuario['results'][$i]['mIdUser'] = $key['IdUser']; 
+                $rtnUsuario['results'][$i]['mIdUser'] = $key['IdUser'];
                 $rtnUsuario['results'][$i]['mPass'] = $key['Password']; 
                 $rtnUsuario['results'][$i]['mPedido'] = $key['PEDIDO'];
                 $rtnUsuario['results'][$i]['mCobro'] = $key['COBRO'];
                 $rtnUsuario['results'][$i]['mRazon'] = $key['RAZON'];
-            }            
+            }
+        }else{
+            $rtnUsuario['results'][$i]['mIdUser'] = "";
         }
         echo json_encode($rtnUsuario);
     }
@@ -327,13 +328,7 @@ class servicios_model extends CI_Model
         echo json_encode($query);
     }
 
-    public function insertPedidos($Data){
-
-        /*$pedido = 'F07P22051731';
-
-        $rest = substr($pedido, 1,2);
-        echo "F".$rest;*/
-
+    public function insertPedidos($Data){    
         $i = 0;
         $rtnUsuario = array();
         $cadena = "";
@@ -346,17 +341,16 @@ class servicios_model extends CI_Model
             }
 
             $query = $this->db->query("SELECT IDPEDIDO FROM pedido WHERE IDPEDIDO = '".$key['mIdPedido']."'");
+            
             $cadena = "'".$key['mIdPedido']."',";
             if ($query->num_rows() == 0){
-
+                $this->db->query("UPDATE llaves SET pedido = pedido+1 WHERE RUTA ='".$key['mVendedor']."'");
 
                 $insert = $this->db->query('CALL SP_pedidos ("'.$key['mIdPedido'].'","'.$key['mVendedor'].'","'.$key['mCliente'].'",
                                             "'.str_replace("'", "", $key['mNombre']).'","'.$key['mFecha'].'","'.$key['mPrecio'].'","'.$key['mEstado'].'",
                                             "'.$resp.'","'.$key['mComentario'].'")');
 
-                if ($insert) {
-                    $this->db->query("UPDATE llaves SET pedido= pedido+1 WHERE RUTA ='".$key['mVendedor']."'");
-                }
+
                 for ($e=0; $e <(count($key['detalles']['nameValuePairs']))/6; $e++){
                     $datos = array('IDPEDIDO'   => $key['detalles']['nameValuePairs']['ID'.$i],
                                    'ARTICULO'   => $key['detalles']['nameValuePairs']['ARTICULO'.$i],
@@ -375,13 +369,13 @@ class servicios_model extends CI_Model
             }
         }
         $query = $this->db->query("SELECT IDPEDIDO FROM pedido WHERE IDPEDIDO IN (".substr($cadena, 0,-1).")");
+
         if ($query->num_rows()>0) {
             $rtnUsuario['results'][0]['mEstado'] = "PEDIDOS ENVIADOS...";
         }else{
             $rtnUsuario['results'][0]['mEstado'] = "ERROR, INTENTELO MAS TARDE";
         }
 
-        
         echo json_encode($rtnUsuario);
     }
 
@@ -429,19 +423,21 @@ class servicios_model extends CI_Model
         $rtnPedido = array();
         foreach(json_decode($Post, true) as $key){
             $this->db->where('IDPEDIDO',$key['mIdPedido']);
-            $this->db->select('IDPEDIDO,ESTADO,COMENTARIO');
+            $this->db->select('IDPEDIDO,ESTADO,COMENTARIO,CONFIRMACION');
             $query = $this->db->get('view_mispedidos');
             if ($query->num_rows()>0) {
                 foreach ($query->result_array() as $key) {
                     $rtnPedido['results'][$i]['mIdPedido']  = $key['IDPEDIDO'];
                     $rtnPedido['results'][$i]['mEstado']    = $key['ESTADO'];
                     $rtnPedido['results'][$i]['mAnulacion']    = $key['COMENTARIO'];
+                    $rtnPedido['results'][$i]['mConfirmacion']    = $key['CONFIRMACION'];
                     $i++;
                 }
             }else{
                     $rtnPedido['results'][$i]['mIdPedido']  = "";
                     $rtnPedido['results'][$i]['mEstado']    = "";
                     $rtnPedido['results'][$i]['mAnulacion'] = "";
+                    $rtnPedido['results'][$i]['mConfirmacion'] = "";
             }
         }
         echo json_encode($rtnPedido);
