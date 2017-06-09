@@ -69,7 +69,9 @@ class Servicio_controllers extends CI_Controller {
 	}
 	public function updatePedidos()
 	{
+		//$ajax = '[{"detalles":{"nameValuePairs":{"ID0":"F03P0906172","ARTICULO0":"13413013","DESC0":"Metoclopramida 10 mg Tableta 100/Caja (VARDHMAN)","CANT0":"1.0","TOTAL0":"174.24","BONI0":"0","ID1":"F03P0906172","ARTICULO1":"10301142","DESC1":"Ketoprofeno 50 mg Cápsulas 100/Caja (Ramos)","CANT1":"1.0","TOTAL1":"180","BONI1":"0","ID2":"F03P0906172","ARTICULO2":"10505012","DESC2":"Amox/Ac. Clavulánico 250 mg/62.5 mg/5ml PPSO 60 ml/Frasco 1/Caja (Intermed)","CANT2":"2.0","TOTAL2":"142","BONI2":"2+1"}},"mCliente":"03147","mComentario":"primer pedido tipitapa","mEstado":"0","mFecha":"2017-06-09 08:42:56","mIdPedido":"F03P0906172","mNombre":"FARMACIA BYBELK N°","mPrecio":"638.24","mVendedor":"F03"}]';
 		$this->servicios_model->updatePedidos($_POST['PEDIDOS']);
+		//$this->servicios_model->updatePedidos($ajax);
 	}
 	public function insertRazones()
 	{
